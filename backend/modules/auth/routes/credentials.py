@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
-from sqlalchemy.future import select
 from backend.modules.database.database import get_db, get_db_sync
 from backend.modules.auth.services.twitch_auth_service import TwitchAuthService
 from backend.modules.auth.schemas.twitch_credential import TwitchCredentialInput
@@ -42,3 +41,18 @@ async def get_twitch_credentials(db: AsyncSession = Depends(get_db)):
     if not credentials:
         return {"clientId": "", "clientSecret": ""}
     return credentials
+
+
+@router.get("/status/twitch")
+async def twitch_credentials_status(db: AsyncSession = Depends(get_db)):
+    """Check if Twitch credentials are set."""
+    service = TwitchAuthService(db)
+    credentials = await service.get_twitch_credentials()
+    return {"twitch_credentials_set": bool(credentials)}
+
+@router.get("/status/spotify")
+def spotify_credentials_status(db: Session = Depends(get_db_sync)):
+    """Check if Spotify credentials are set."""
+    service = SpotifyAuthService(db)
+    credentials = service.get_credentials()
+    return {"spotify_credentials_set": bool(credentials)}

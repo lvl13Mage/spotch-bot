@@ -11,7 +11,6 @@ import { ThemeProvider } from "@/components/ThemeProvider"; // Import ThemeProvi
 function App() {
   return (
     <ThemeProvider defaultTheme="system" storageKey="spotify-bot-theme">
-      <h1>Spotify Bot</h1>
       <Router basename="/static">
         <Routes>
           <Route path="/" element={<Layout />}>

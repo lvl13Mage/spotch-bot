@@ -1,3 +1,4 @@
+import logging
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 from sqlalchemy.orm import Session
@@ -15,10 +16,15 @@ class SpotifyClient:
     def authenticate(self):
         """Authenticate the Spotify client."""
         spotify_credentials = self.auth_service.db.get(SpotifyCredential, 1)
-        
-        self.auth_service.verify_or_refresh_token()
+
+        if not spotify_credentials:
+            logging.warning("No Spotify credentials found. Spotify client will not be initialized.")
+            return  # Exit early if no credentials are found
+
         token_info = self.auth_service.get_spotify_auth_manager(spotify_credentials).get_cached_token()
         if not token_info:
-            raise Exception("Failed to get access token.")
-        
+            logging.warning("Spotify token not found or expired. Please authenticate via the frontend.")
+            return
+
         self.sp = spotipy.Spotify(auth=token_info['access_token'])
+        logging.info("✅ Spotify client authenticated successfully.")

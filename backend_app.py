@@ -38,17 +38,20 @@ async def serve_static_index():
 
 # --- Uvicorn Config ---
 def main():
-    print("🚀 Starting Spotify-Twitch Bot API...")
-    
-    # Open the browser to the frontend
+    # Detect environment (default to development)
+    app_env = os.getenv("APP_ENV", "development").lower()
+    is_production = app_env == "production"
+
+    print(f"🚀 Starting Spotify-Twitch Bot API in {'production' if is_production else 'development'} mode...")
+
     webbrowser.open("http://127.0.0.1:8135/static")
     logging.info("If you don't see the browser, please open it manually at http://127.0.0.1:8135/static/")
-    
+
     uvicorn.run(
         "backend.modules.routing:app",
         host="127.0.0.1",
         port=8135,
-        reload=True,  # Set to False in prod
+        reload=not is_production,  # Disable reload in production
         log_level="info",
     )
 

@@ -11,6 +11,8 @@ from backend.modules.auth.models.twitch_token import TwitchToken
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.modules.auth.services.twitch_auth_service import TwitchAuthService
 from backend.modules.twitch.services.twitch_eventsub_service import TwitchEventSubService
+from typing import Optional
+import logging
 
 class TwitchBotClient(Bot):
 
@@ -55,9 +57,14 @@ class TwitchBotClient(Bot):
         
 
     @classmethod
-    async def create(cls, db: AsyncSession) -> "TwitchBotClient":
+    async def create(cls, db: AsyncSession) -> Optional["TwitchBotClient"]:
         service = TwitchAuthService(db)
         credential = await service.get_twitch_credentials()
+
+        if not credential or not credential.twitch_token:
+            logging.warning("No Twitch credentials found. Twitch bot will not start.")
+            return None  # Return None if credentials are missing
+
         token_obj = credential.twitch_token
 
         return cls(
@@ -69,7 +76,7 @@ class TwitchBotClient(Bot):
             db=db,
             credential=credential,
             twitch_token=token_obj,
-        )
+                    )
         
     async def load_tokens(self):
         """(Optional) Reload tokens from DB, e.g., after refresh."""

@@ -26,17 +26,21 @@ async def lifespan(app: FastAPI):
     
     # Handle Twitch Bot
     bot = await TwitchBotClient.create(db)
-    await bot.load_tokens()
-    app.state.twitch_bot = bot
+    if bot:
+        await bot.load_tokens()
+        app.state.twitch_bot = bot
+        logging.info("✅ Twitch bot started and connected")
+        bot_task = asyncio.create_task(bot.start_bot())
+        app.state.bot_task = bot_task
+        
+        # Start EventSub WebSocket handler
+        handler = await TwitchEventSubWebSocketHandler.create(db)
+        app.state.eventsub_handler = handler
+        app.state.eventsub_task = asyncio.create_task(handler.start())
+        logging.info("✅ Twitch bot started and connected")
+    else:
+        logging.warning("⚠️ Twitch bot not started due to missing credentials.")
     
-    bot_task = asyncio.create_task(bot.start_bot())
-    app.state.bot_task = bot_task
-    
-    # Start EventSub WebSocket handler
-    handler = await TwitchEventSubWebSocketHandler.create(db)
-    app.state.eventsub_handler = handler
-    app.state.eventsub_task = asyncio.create_task(handler.start())
-    logging.info("✅ Twitch bot started and connected")
     print("FastAPI server started")
     
     yield

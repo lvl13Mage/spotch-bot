@@ -6,7 +6,6 @@ import "./index.css"; // Ensure your global styles are imported
 const root = createRoot(document.getElementById("root")!);
 root.render(
   <React.StrictMode>
-    <h1	>Spotify Bot</h1>
     <App />
   </React.StrictMode>
 );

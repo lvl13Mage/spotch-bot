@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from backend.modules.auth.schemas.spotify_credential import SpotifyCredentialInput
 from backend.modules.auth.models.spotify_credential import SpotifyCredential
 from backend.modules.auth.utils.spotify_cache_database_handler import SpotifyCacheDatabaseHandler
+import logging
 
 class SpotifyAuthService:
 
@@ -23,23 +24,23 @@ class SpotifyAuthService:
         
     def verify_or_refresh_token(self):
         """Verify or refresh the Spotify token if expired."""
-        # get credential and throw exception if no credentials found
         spotify_credentials = self.db.get(SpotifyCredential, 1)
+
         if not spotify_credentials:
-            raise Exception("No Spotify credentials found in the database.")
+            logging.warning("No Spotify credentials found. Token refresh skipped.")
+            return  # Exit early if no credentials are found
 
-        # Create Spotify OAuth manager with cached token or new flow
         auth_manager = self.get_spotify_auth_manager(spotify_credentials)
-
         if auth_manager.validate_token(auth_manager.cache_handler.get_cached_token()):
+            logging.warning("No cached Spotify token found. Please authenticate via the frontend.")
             return
 
         # No valid token, initiate new flow
         token_info = auth_manager.get_access_token(auth_manager.cache_handler.get_cached_token())
         if not token_info:
-            raise Exception("Failed to get new access token.")
-
-        # Save new token to cache
+            logging.warning("Spotify token not found or expired. Please authenticate via the frontend.")
+            return
+        logging.info("Spotify token verified or refreshed successfully.")
         
     '''
         Router EndPoints
@@ -108,4 +109,4 @@ class SpotifyAuthService:
             "scope": credential.scope,
             "redirectUri": credential.redirect_uri
         }
-        
+

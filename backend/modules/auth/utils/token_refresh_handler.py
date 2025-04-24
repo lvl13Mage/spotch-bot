@@ -17,10 +17,22 @@ class TokenRefreshHandler:
                     twitch_service = TwitchAuthService(db_async)
                     spotify_service = SpotifyAuthService(db_sync)
 
-                    await twitch_service.verify_or_refresh_token()
-                    spotify_service.verify_or_refresh_token()
+                    # Check and refresh Twitch credentials
+                    twitch_credentials = await twitch_service.get_twitch_credentials()
+                    if twitch_credentials and twitch_credentials.twitch_token:
+                        await twitch_service.verify_or_refresh_token()
+                        logging.info("✅ Twitch token verified/refreshed successfully.")
+                    else:
+                        logging.warning("⚠️ No Twitch credentials found. Skipping Twitch token refresh.")
 
-                    logging.info("✅ Tokens verified/refreshed successfully.")
+                    # Check and refresh Spotify credentials
+                    spotify_credentials = spotify_service.get_credentials()
+                    if spotify_credentials and spotify_credentials.spotify_token:
+                        spotify_service.verify_or_refresh_token()
+                        logging.info("✅ Spotify token verified/refreshed successfully.")
+                    else:
+                        logging.warning("⚠️ No Spotify credentials found. Skipping Spotify token refresh.")
+
             except Exception as e:
                 logging.exception(f"Token refresher failed: {e}")
 
