@@ -35,7 +35,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22.14.0
+          node-version: 18
 
       # Install and build frontend
       - name: Build frontend
@@ -44,10 +44,10 @@ jobs:
           npm install
           npm run build
 
-      # Package backend with PyInstaller
+      # Package backend with PyInstaller using the spec file
       - name: Build Linux executable
         run: |
-          pyinstaller --onefile --name spotify-bot backend_app.py
+          pyinstaller spotify-bot.spec
 
       # Upload Linux executable as artifact
       - name: Upload Linux artifact
@@ -82,7 +82,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22.14.0
+          node-version: 18
 
       # Install and build frontend
       - name: Build frontend
@@ -91,10 +91,10 @@ jobs:
           npm install
           npm run build
 
-      # Package backend with PyInstaller
+      # Package backend with PyInstaller using the spec file
       - name: Build Windows executable
         run: |
-          pyinstaller --onefile --name spotify-bot backend_app.py
+          pyinstaller spotify-bot.spec
 
       # Upload Windows executable as artifact
       - name: Upload Windows artifact
