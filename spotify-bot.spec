@@ -1,26 +1,20 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 
-# Add the dist folder to the bundled data
-datas = [
-    ('frontend/dist', 'frontend/dist')  # Include the frontend's static files
-]
-
-# Update the Analysis section
 a = Analysis(
     ['backend_app.py'],
     pathex=[],
     binaries=[],
-    datas=datas,  # Include the datas here
-    hiddenimports=[],
+    datas=[
+        ('frontend/dist', 'frontend/dist'),  # Include the frontend's static files
+    ],
+    hiddenimports=['aiosqlite'],  # Explicitly include aiosqlite
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
     excludes=[],
-    win_no_prefer_redirects=False,
-    win_private_assemblies=False,
-    cipher=None,
     noarchive=False,
+    optimize=0,
 )
 pyz = PYZ(a.pure)
 

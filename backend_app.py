@@ -21,8 +21,13 @@ logging.basicConfig(
 )
 
 # --- Mount Static Files ---
-# Assuming your static frontend files are in a folder named "frontend/dist"
-frontend_path = os.path.join(os.path.dirname(__file__), "frontend", "dist")
+# Determine the path to the frontend/dist folder
+if getattr(sys, 'frozen', False):  # Check if running as a PyInstaller executable
+    frontend_path = os.path.join(sys._MEIPASS, "frontend", "dist")
+else:
+    frontend_path = os.path.join(os.path.dirname(__file__), "frontend", "dist")
+
+# Mount the static files
 app.mount("/static", StaticFiles(directory=frontend_path), name="static")
 
 # Serve index.html for the /static/ route

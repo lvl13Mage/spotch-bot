@@ -29,3 +29,6 @@ Thumbs.db
 # Node.js (if applicable for frontend)
 node_modules/
 dist/
+
+# Build artifacts
+build/
