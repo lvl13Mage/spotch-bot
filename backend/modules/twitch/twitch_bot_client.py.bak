@@ -1,0 +1,65 @@
+from twitchio.ext import commands
+from sqlalchemy.ext.asyncio import AsyncSession
+import asyncio
+from backend.modules.auth.services.twitch_auth_service import TwitchAuthService
+from backend.modules.auth.models.twitch_token import TwitchToken
+
+class TwitchBotClient(commands.Bot):
+
+    def __init__(self, token: str, refresh_token: str, client_id: str, client_secret: str, bot_id: str, initial_channels: list[str], db: AsyncSession):
+        self.db = db
+        self._cached_token: TwitchToken | None = None
+        super().__init__(
+            token=token,
+            prefix="!",
+            initial_channels=initial_channels,
+            client_id=client_id,
+            client_secret=client_secret,
+            bot_id=bot_id
+        )
+
+    @classmethod
+    async def create(cls, db: AsyncSession) -> "TwitchBotClient":
+        """Factory method to create the bot after loading tokens from DB."""
+        twitch_auth_service = TwitchAuthService(db)
+        creds = await twitch_auth_service.get_twitch_credentials()
+
+        if not creds or not creds.twitch_token:
+            raise RuntimeError("Missing credentials or token.")
+
+        token_obj = creds.twitch_token
+
+        return cls(
+            token=token_obj.access_token.replace("oauth:", ""),
+            refresh_token=token_obj.refresh_token,
+            client_id=creds.client_id,
+            initial_channels=[token_obj.channel_name],
+            client_secret=creds.client_secret,
+            bot_id=creds.twitch_token.user_id,
+            db=db
+        )
+
+    async def save_tokens(self, token: str, refresh_token: str):
+        if not self._cached_token:
+            raise RuntimeError("Token object not cached.")
+        self._cached_token.access_token = token
+        self._cached_token.refresh_token = refresh_token
+        service = TwitchAuthService(self.db)
+        await service.refresh_token(self._cached_token)
+        
+    async def load_tokens(self):
+        if not self._cached_token:
+            service = TwitchAuthService(self.db)
+            twitch_token = await service.get_valid_token(self.db)
+            if twitch_token:
+                self.add_token(token=twitch_token.access_token.replace("oauth:", ""), refresh_token=twitch_token.refresh_token)
+                
+    async def connect_to_chat(self):
+        ''' connect to chat channels  '''
+        if not self.connected_channels:
+            raise RuntimeError("No channels are specified.")
+
+    async def send_chat_message(self, message: str):
+        if not self.connected_channels:
+            raise RuntimeError("No channels are connected yet.")
+        await self.connected_channels[0].send(message)

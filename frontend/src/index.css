@@ -1,0 +1,81 @@
+@import "tailwindcss";
+@config "../tailwind.config.js";
+
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: var(--foreground);
+  background-color: var(--background);
+
+  --radius: 0.625rem;
+
+  /* Violet Theme Colors */
+  --background: #f5f3ff; /* Light mode background */
+  --foreground: #1e1b4b; /* Light mode text */
+  --card: #ede9fe;
+  --card-foreground: #1e1b4b;
+  --popover: #ede9fe;
+  --popover-foreground: #1e1b4b;
+  --primary: #7c3aed;
+  --primary-foreground: #ffffff;
+  --secondary: #c4b5fd;
+  --secondary-foreground: #1e1b4b;
+  --muted: #e0e7ff;
+  --muted-foreground: #4c1d95;
+  --accent: #a78bfa;
+  --accent-foreground: #ffffff;
+  --destructive: #f87171;
+  --border: #d4d4d8;
+  --input: #e4e4e7;
+  --ring: #7c3aed;
+  --sidebar: #ede9fe;
+  --sidebar-foreground: #1e1b4b;
+  --sidebar-primary: #7c3aed;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #a78bfa;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #d4d4d8;
+  --sidebar-ring: #7c3aed;
+}
+
+.dark {
+  --background: #1e1b4b; /* Dark mode background */
+  --foreground: #f5f3ff; /* Dark mode text */
+  --card: #2a2159;
+  --card-foreground: #f5f3ff;
+  --popover: #2a2159;
+  --popover-foreground: #f5f3ff;
+  --primary: #7c3aed;
+  --primary-foreground: #ffffff;
+  --secondary: #4c1d95;
+  --secondary-foreground: #f5f3ff;
+  --muted: #3b0764;
+  --muted-foreground: #e0e7ff;
+  --accent: #a78bfa;
+  --accent-foreground: #ffffff;
+  --destructive: #f87171;
+  --border: #3f3f46;
+  --input: #52525b;
+  --ring: #7c3aed;
+  --sidebar: #2a2159;
+  --sidebar-foreground: #f5f3ff;
+  --sidebar-primary: #7c3aed;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #a78bfa;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #3f3f46;
+  --sidebar-ring: #7c3aed;
+}
+
+@layer base {
+  * {
+    border-color: var(--border); /* Replace @apply border-border */
+  }
+  body {
+    background-color: var(--background); /* Replace @apply bg-background */
+    color: var(--foreground); /* Replace @apply text-foreground */
+  }
+}

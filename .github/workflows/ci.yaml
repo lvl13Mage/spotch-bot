@@ -1,0 +1,104 @@
+name: Build Distributables
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-linux:
+    name: Build Linux Executable
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12.3
+
+      # Install dependencies
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      # Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.14.0
+
+      # Install and build frontend
+      - name: Build frontend
+        run: |
+          cd frontend
+          npm install
+          npm run build
+
+      # Package backend with PyInstaller
+      - name: Build Linux executable
+        run: |
+          pyinstaller --onefile --name spotify-bot backend_app.py
+
+      # Upload Linux executable as artifact
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name spotify-bot-linux
+          path dist/spotify-bot
+
+  build-windows:
+    name: Build Windows Executable
+    runs-on: windows-latest
+
+    steps:
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12.3
+
+      # Install dependencies
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      # Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.14.0
+
+      # Install and build frontend
+      - name: Build frontend
+        run: |
+          cd frontend
+          npm install
+          npm run build
+
+      # Package backend with PyInstaller
+      - name: Build Windows executable
+        run: |
+          pyinstaller --onefile --name spotify-bot backend_app.py
+
+      # Upload Windows executable as artifact
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name spotify-bot-windows
+          path dist/spotify-bot.exe

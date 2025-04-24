@@ -1,0 +1,26 @@
+# FastAPI and related dependencies
+fastapi[all]~=0.115.11
+
+# ASGI Server (for running FastAPI)
+uvicorn[standard]~=0.34.0
+
+# Database (SQLite + Async SQLAlchemy)
+sqlalchemy[asyncio]~=2.0.39
+aiosqlite~=0.21.0
+alembic
+
+# OAuth2 authentication
+twitchio~=3.0.0b4  # Twitch API wrapper
+spotipy~=2.25.1  # Spotify API wrapper
+requests~=2.32.3  # HTTP requests
+
+# Pydantic for data validation
+pydantic~=2.10.6
+pydantic-settings~=2.8.1  # .env config management
+
+# Logging
+loguru~=0.7.3
+
+# Testing
+pytest~=8.3.5
+httpx~=0.28.1  # For testing API calls
