@@ -53,8 +53,8 @@ jobs:
       - name: Upload Linux artifact
         uses: actions/upload-artifact@v4
         with:
-          name spotify-bot-linux
-          path dist/spotify-bot
+          name: spotify-bot-linux
+          path: dist/spotify-bot
 
   build-windows:
     name: Build Windows Executable
@@ -100,5 +100,5 @@ jobs:
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
-          name spotify-bot-windows
-          path dist/spotify-bot.exe
+          name: spotify-bot-windows
+          path: dist/spotify-bot.exe
