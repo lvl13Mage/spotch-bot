@@ -1,137 +1,68 @@
-# 🎵 Twitch Spotify Bot
+# 🎵 Spotify-Twitch Bot
 
-A local web application that integrates **Twitch** and **Spotify** for handling **song requests** and **persistent data storage**.
-
-- **Backend**: FastAPI (Python) with SQLite and SQLAlchemy.
-- **Frontend**: React with Vite, styled using TailwindCSS.
-- **Runs Locally**: Configurable via a web dashboard.
-- **Authentication**: Uses Twitch and Spotify OAuth.
-- **Integration**: Supports StreamerBot and external REST/WebSocket APIs.
-- **Data Storage**: SQLite for persistent settings and logs.
+Welcome to the **Spotify-Twitch Bot**! This application integrates Twitch and Spotify to help streamers manage song requests and Twitch rewards seamlessly.
 
 ---
 
-## 🚀 Features
-✅ Song request management  
-✅ Twitch & Spotify OAuth authentication  
-✅ Web-based configuration dashboard  
-✅ Persistent data storage using SQLite  
-✅ REST API for external integration  
-✅ Optional WebSocket support  
+## 📋 Features
+
+- **Dashboard**: A user-friendly interface to manage your bot.
+- **Rewards Management**: Add, edit, and manage Twitch rewards.
+- **Twitch & Spotify Authentication**: Easily connect your Twitch and Spotify accounts.
 
 ---
 
-## 📦 Installation
+## 🖥️ Dashboard Overview
 
-### 1️⃣ Clone the Repository
-```sh
-git clone https://github.com/YOUR_GITHUB/twitch-spotify-bot.git
-cd twitch-spotify-bot
-```
+The **Dashboard** is your central hub for managing the bot. From here, you can:
 
-### 2️⃣ Set Up a Virtual Environment
-```sh
-python -m venv venv
-```
-
-### 3️⃣ Activate the Virtual Environment
-- **Windows (CMD or PowerShell)**
-  ```sh
-  venv\Scripts\activate
-  ```
-- **Mac/Linux**
-  ```sh
-  source venv/bin/activate
-  ```
-
-### 4️⃣ Install Dependencies
-```sh
-pip install -r requirements.txt
-```
+1. **Monitor API Credentials**: Ensure your Twitch and Spotify accounts are connected.
+2. **Manage Rewards**: Add, edit, or delete Twitch rewards.
+3. **Configure Settings**: Adjust bot settings to suit your needs.
 
 ---
 
-## 🛠 Configuration
-Create a `.env` file in the project root with your Twitch and Spotify credentials:
+## 🎁 Rewards Page
 
-```env
-TWITCH_CLIENT_ID=your_twitch_client_id
-TWITCH_CLIENT_SECRET=your_twitch_client_secret
-SPOTIFY_CLIENT_ID=your_spotify_client_id
-SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
-```
+The **Rewards Page** allows you to manage your Twitch rewards. Here’s what you can do:
 
----
-
-## 🚀 Running the Application
-
-### **Start the FastAPI Backend**
-```sh
-uvicorn backend.main:app --reload
-```
-The API will be available at:  
-🔗 **http://127.0.0.1:8000**
-
-### **Start the Frontend (React + Vite)**
-```sh
-cd frontend
-npm install
-npm run dev
-```
-The UI will be available at:  
-🔗 **http://localhost:5173**
+1. **View Rewards**: See a list of all your Twitch rewards.
+2. **Add a Reward**:
+   - Click the **+** button at the bottom of the page.
+   - Fill out the form with the reward details (e.g., name, description, cost, type).
+   - Save the reward, and it will sync with Twitch.
+3. **Edit a Reward**:
+   - Click the **Edit** icon next to a reward.
+   - Update the details and save your changes.
+4. **Delete a Reward**:
+   - Click the **Delete** icon to remove a reward. The reward will be deactivated and synced with Twitch before deletion.
 
 ---
 
-## 🎯 API Endpoints
+## 🔑 Twitch Authentication
 
-| Method | Endpoint             | Description |
-|--------|----------------------|-------------|
-| GET    | `/auth/twitch`       | Start Twitch OAuth |
-| GET    | `/auth/spotify`      | Start Spotify OAuth |
-| POST   | `/songs`             | Add a song request |
-| GET    | `/songs`             | Retrieve all song requests |
-| GET    | `/settings`          | Fetch bot settings |
-| GET    | `/logs`              | Retrieve logs |
+To connect your Twitch account:
 
-For full API documentation, visit:  
-🔗 **http://127.0.0.1:8000/docs**
+1. Navigate to the **Twitch Settings** page.
+2. Click the **Authenticate with Twitch** button.
+3. Follow the prompts to log in and authorize the bot.
+4. Once authenticated, your Twitch account will be linked to the bot.
 
 ---
 
-## 🧪 Running Tests
-To run unit tests, use:
+## 🎵 Spotify Authentication
 
-```sh
-pytest
-```
+To connect your Spotify account:
 
----
-
-## ⏹️ Stopping & Deactivating
-To stop the backend, press **CTRL + C** in the terminal.  
-To exit the virtual environment, run:
-
-```sh
-deactivate
-```
+1. Navigate to the **Spotify Settings** page.
+2. Click the **Authenticate with Spotify** button.
+3. Follow the prompts to log in and authorize the bot.
+4. Once authenticated, your Spotify account will be linked to the bot.
 
 ---
 
-## 📜 License
-This project is licensed under the **MIT License**.
+## 📞 Support
+
+If you encounter any issues, please reach out to our support team or check the documentation for troubleshooting tips.
 
 ---
-
-## 🌟 Contributing
-Pull requests are welcome! Please open an issue first for discussion.
-
----
-
-## 🎤 Contact
-For questions or support, reach out via Twitch or Discord.
-
----
-
-**Happy Streaming! 🚀🎶**
-```

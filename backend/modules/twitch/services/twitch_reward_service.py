@@ -15,8 +15,8 @@ class TwitchRewardService:
 
     async def create_reward(self, name: str, description: str, amount: int, reward_type: str, active: int = 1) -> Reward:
         """Create a new reward in the database."""
-        if reward_type not in [t.value for t in RewardType]:
-            raise ValueError(f"Invalid reward type: {reward_type}. Allowed types: {[t.value for t in RewardType]}")
+        if reward_type not in RewardType.get_technical_labels():
+            raise ValueError(f"Invalid reward type: {reward_type}. Allowed types: {RewardType.get_technical_labels()}")
 
         reward = Reward(name=name, description=description, amount=amount, type=reward_type, active=active)
         self.db.add(reward)
@@ -24,9 +24,10 @@ class TwitchRewardService:
             await self.db.commit()
             await self.db.refresh(reward)
         except IntegrityError as e:
+            print(f"IntegrityError: {str(e)}")
             await self.db.rollback()
             if "reward_type_check" in str(e.orig):
-                raise ValueError(f"Invalid reward type: {reward_type}. Allowed types: {[t.value for t in RewardType]}")
+                raise ValueError(f"Invalid reward type: {reward_type}. Allowed types: {RewardType.get_technical_labels()}")
             raise
         return reward
 
@@ -160,14 +161,22 @@ class TwitchRewardService:
     async def enable_reward(self, reward_id: int):
         """Enable a reward by setting its active field to 1."""
         reward = await self.get_reward_by_id(reward_id)
+        if not reward:
+            raise ValueError("Reward not found")
         reward.active = 1
-        await self.db.commit()
+        async with self.db as session:
+            session.add(reward)
+            await session.commit()
 
     async def disable_reward(self, reward_id: int):
         """Disable a reward by setting its active field to 0."""
         reward = await self.get_reward_by_id(reward_id)
+        if not reward:
+            raise ValueError("Reward not found")
         reward.active = 0
-        await self.db.commit()
+        async with self.db as session:
+            session.add(reward)
+            await session.commit()
 
     async def get_reward_by_id(self, reward_id: int) -> Reward:
         """Retrieve a specific reward by its ID."""
@@ -178,8 +187,17 @@ class TwitchRewardService:
             raise ValueError(f"Reward with ID {reward_id} not found.")
 
     async def delete_reward(self, reward_id: int):
-        """Delete a reward from the database."""
+        """Deactivate, sync, and delete a reward from the database."""
         reward = await self.get_reward_by_id(reward_id)
+
+        # Step 1: Deactivate the reward
+        reward.active = 0
+        await self.db.commit()
+
+        # Step 2: Sync the deactivation to Twitch
+        await self.set_twitch_rewards()
+
+        # Step 3: Delete the reward from the database
         await self.db.delete(reward)
         await self.db.commit()
 
@@ -193,8 +211,8 @@ class TwitchRewardService:
         if reward_update.amount is not None:
             reward.amount = reward_update.amount
         if reward_update.type is not None:
-            if reward_update.type not in [t.value for t in RewardType]:
-                raise ValueError(f"Invalid reward type: {reward_update.type}. Allowed types: {[t.value for t in RewardType]}")
+            if reward_update.type not in RewardType.get_technical_labels():
+                raise ValueError(f"Invalid reward type: {reward_update.type}. Allowed types: {RewardType.get_technical_labels()}")
             reward.type = reward_update.type
         if reward_update.active is not None:
             reward.active = reward_update.active
@@ -205,7 +223,7 @@ class TwitchRewardService:
         except IntegrityError as e:
             await self.db.rollback()
             if "reward_type_check" in str(e.orig):
-                raise ValueError(f"Invalid reward type: {reward_update.type}. Allowed types: {[t.value for t in RewardType]}")
+                raise ValueError(f"Invalid reward type: {reward_update.type}. Allowed types: {RewardType.get_technical_labels()}")
             raise
         return reward
 

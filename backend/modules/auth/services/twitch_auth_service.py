@@ -161,9 +161,20 @@ class TwitchAuthService:
         # fetch credential record with id 1 if exists, otherwise return None
         credential = self.get_twitch_credentials()
         # return credentials
-        return {
-            "clientId": credential.client_id,
-            "clientSecret": credential.client_secret,
-            "scope": credential.scope,
-            "redirectUri": credential.redirect_uri
-        }
+        return credential
+    
+    async def delete_credentials_and_token(self):
+        """Delete Twitch credentials and associated token from the database."""
+        async with self.db as session:
+            # Fetch the Twitch credentials
+            result = await session.execute(select(TwitchCredential).filter_by(id=1))
+            credential = result.scalars().first()
+
+            if credential:
+                # Delete the associated token if it exists
+                if credential.twitch_token:
+                    await session.delete(credential.twitch_token)
+
+                # Delete the credential itself
+                await session.delete(credential)
+                await session.commit()

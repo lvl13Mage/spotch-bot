@@ -4,6 +4,7 @@ from spotipy.oauth2 import SpotifyOAuth
 from sqlalchemy.orm import Session
 from backend.modules.auth.schemas.spotify_credential import SpotifyCredentialInput
 from backend.modules.auth.models.spotify_credential import SpotifyCredential
+from backend.modules.auth.models.spotify_token import SpotifyToken
 from backend.modules.auth.utils.spotify_cache_database_handler import SpotifyCacheDatabaseHandler
 import logging
 
@@ -103,10 +104,17 @@ class SpotifyAuthService:
             return None
 
         # return credentials
-        return {
-            "clientId": credential.client_id,
-            "clientSecret": credential.client_secret,
-            "scope": credential.scope,
-            "redirectUri": credential.redirect_uri
-        }
+        return credential
+    
+    def delete_credentials_and_token(self):
+        """Delete Spotify credentials and token."""
+        credential = self.db.query(SpotifyCredential).filter_by(id=1).first()
+        if credential:
+            self.db.delete(credential)
+        
+        token = self.db.query(SpotifyToken).filter_by(id=1).first()
+        if token:
+            self.db.delete(token)
+        
+        self.db.commit()
 

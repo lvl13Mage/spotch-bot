@@ -18,7 +18,9 @@ class SpotifyCacheDatabaseHandler(CacheHandler):
             if not credential:
                 raise Exception("No cached Spotify credentials found in the database.")
             if not credential.spotify_token:
+                print("No cached Spotify token found in the database.")
                 return None
+            print("Cached Spotify token found in the database.")
             token_info = {
                 "access_token": credential.spotify_token.access_token,
                 "refresh_token": credential.spotify_token.refresh_token,

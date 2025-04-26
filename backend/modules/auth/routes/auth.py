@@ -31,7 +31,7 @@ async def verify_and_refresh_token(db: AsyncSession = Depends(get_db)):
     """Verifies the Twitch token and refreshes it if needed."""
     twitch_service = TwitchAuthService(db)
     try:
-        token = await twitch_service.get_valid_token(db)  # ✅ Get the stored token
+        token = await twitch_service.get_valid_token()  # ✅ Get the stored token
         if not token:
             return {"message": "Could not find stored token. Please authorize Twitch first."}
         return {"message": "Token verified and refreshed successfully!"}

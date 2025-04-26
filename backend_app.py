@@ -23,20 +23,8 @@ logging.basicConfig(
 # --- Mount Static Files ---
 # Determine the path to the frontend/dist folder
 if getattr(sys, 'frozen', False):  # Check if running as a PyInstaller executable
-    frontend_path = os.path.join(sys._MEIPASS, "frontend", "dist")
     os.environ["APP_ENV"] = "production"  # Force production mode for PyInstaller builds
-else:
-    frontend_path = os.path.join(os.path.dirname(__file__), "frontend", "dist")
-
-# Mount the static files
-app.mount("/static", StaticFiles(directory=frontend_path), name="static")
-
-# Serve index.html for the /static/ route
-@app.get("/static", include_in_schema=False)
-async def serve_static_index():
-    index_path = os.path.join(frontend_path, "index.html")
-    return FileResponse(index_path)
-
+    
 # --- Uvicorn Config ---
 def main():
     # Detect environment (default to development)
@@ -46,7 +34,6 @@ def main():
     print(f"🚀 Starting Spotify-Twitch Bot API in {'production' if is_production else 'development'} mode...")
     
     webbrowser.open("http://127.0.0.1:8135/static")
-    logging.info("If you don't see the browser, please open it manually at http://127.0.0.1:8135/static/")
 
     uvicorn.run(
         "backend.modules.routing:app",
