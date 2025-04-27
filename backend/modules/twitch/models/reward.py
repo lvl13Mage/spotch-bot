@@ -17,10 +17,10 @@ class Reward(Base):
     twitch_reward_id = Column(String, nullable=True, unique=True)  # Renamed from reward_id
 
     active = Column(Integer, nullable=False, default=1)
-    type = Column(String, nullable=False, unique=True)
+    type = Column(String, nullable=False, unique=True)  # Renamed from reward_type
 
-    # Generate enum values safely
-    _allowed_types = ", ".join(f"'{t.value}'" for t in RewardType)
+    # Generate enum values safely using technical labels
+    _allowed_types = ", ".join(f"'{t.technical_label}'" for t in RewardType)
 
     __table_args__ = (
         CheckConstraint(
