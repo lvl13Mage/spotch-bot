@@ -33,7 +33,7 @@ class TwitchEventSubService:
             if reward.name == event['reward']['title']:
                 print(f"Reward found: {reward.name}")            
                 match reward.type:
-                    case RewardType.SONG_QUEUE_ADD.value:
+                    case RewardType.SONG_QUEUE_ADD.technical_label:
                         print(f"Adding song to queue: {event['user_input']}")
                         spotify_song_request_service = SongRequestService()
                         songsearch = spotify_song_request_service.search_song(event['user_input'])

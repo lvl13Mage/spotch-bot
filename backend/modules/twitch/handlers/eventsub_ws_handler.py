@@ -5,6 +5,8 @@ import json
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.modules.auth.services.twitch_auth_service import TwitchAuthService
 from backend.modules.twitch.services.twitch_eventsub_service import TwitchEventSubService
+from backend.modules.twitch.services.twitch_chat_service import TwitchChatService
+from backend.modules.twitch.twitch_bot_client import TwitchBotClient
 
 TWITCH_EVENTSUB_WS_URL = "wss://eventsub.wss.twitch.tv/ws"
 TWITCH_API_SUBSCRIPTIONS = "https://api.twitch.tv/helix/eventsub/subscriptions"
@@ -127,7 +129,9 @@ class TwitchEventSubWebSocketHandler:
 
     async def _dispatch_event(self, event_type: str, event: dict):
         if event_type == "channel.channel_points_custom_reward_redemption.add":
-            service = TwitchEventSubService(self.db)
+            bot = await TwitchBotClient.create(self.db)
+            twitch_chat_service = TwitchChatService(bot)
+            service = TwitchEventSubService(self.db, twitch_chat_service)
             await service.handle_redemption(event)
         else:
             logging.warning(f"Unhandled EventSub event type: {event_type}")
