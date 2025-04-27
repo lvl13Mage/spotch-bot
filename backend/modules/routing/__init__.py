@@ -38,7 +38,7 @@ async def lifespan(app: FastAPI):
         app.state.bot_task = bot_task
         
         # Start EventSub WebSocket handler
-        handler = await TwitchEventSubWebSocketHandler.create(db)
+        handler = await TwitchEventSubWebSocketHandler.create(db, app.state.twitch_bot)
         app.state.eventsub_handler = handler
         app.state.eventsub_task = asyncio.create_task(handler.start())
         logging.info("✅ Twitch bot started and connected")

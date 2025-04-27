@@ -3,7 +3,6 @@ import aiohttp
 import logging
 import json
 from sqlalchemy.ext.asyncio import AsyncSession
-from backend.modules.auth.services.twitch_auth_service import TwitchAuthService
 from backend.modules.twitch.services.twitch_eventsub_service import TwitchEventSubService
 from backend.modules.twitch.services.twitch_chat_service import TwitchChatService
 from backend.modules.twitch.twitch_bot_client import TwitchBotClient
@@ -12,8 +11,9 @@ TWITCH_EVENTSUB_WS_URL = "wss://eventsub.wss.twitch.tv/ws"
 TWITCH_API_SUBSCRIPTIONS = "https://api.twitch.tv/helix/eventsub/subscriptions"
 
 class TwitchEventSubWebSocketHandler:
-    def __init__(self, db, client_id: str, access_token: str, user_id: str):
+    def __init__(self, db, client_id: str, access_token: str, user_id: str, bot: TwitchBotClient):
         self.db = db
+        self.bot = bot
         self.client_id = client_id
         self.access_token = access_token
         self.user_id = user_id
@@ -24,10 +24,13 @@ class TwitchEventSubWebSocketHandler:
         self._ws_session = None  # Save the session for graceful closing
         
     @classmethod
-    async def create(cls, db: AsyncSession) -> "TwitchEventSubWebSocketHandler":
-        twitch_auth_service = TwitchAuthService(db)
-        credentials = await twitch_auth_service.get_twitch_credentials()
-        return cls(db, credentials.client_id, credentials.twitch_token.access_token, credentials.twitch_token.user_id)
+    async def create(cls, db: AsyncSession, bot: TwitchBotClient) -> "TwitchEventSubWebSocketHandler":
+        bot = bot
+        client_id = bot.client_id
+        access_token = bot._twitch_token.access_token.replace("oauth:", "")
+        user_id = bot.user_id
+        
+        return cls(db, client_id, access_token, user_id, bot)
 
     async def start(self):
         while self._running:
@@ -129,8 +132,7 @@ class TwitchEventSubWebSocketHandler:
 
     async def _dispatch_event(self, event_type: str, event: dict):
         if event_type == "channel.channel_points_custom_reward_redemption.add":
-            bot = await TwitchBotClient.create(self.db)
-            twitch_chat_service = TwitchChatService(bot)
+            twitch_chat_service = TwitchChatService( self.bot)
             service = TwitchEventSubService(self.db, twitch_chat_service)
             await service.handle_redemption(event)
         else:

@@ -19,14 +19,14 @@ def setup_logging():
 
     # Create a rotating file handler for app logs
     app_handler = RotatingFileHandler(
-        "logs/app.log", maxBytes=5 * 1024 * 1024, backupCount=5
+        "logs/app.log", maxBytes=5 * 1024 * 1024, backupCount=5, encoding="utf-8"
     )
     app_handler.setLevel(logging.INFO)
     app_handler.setFormatter(formatter)
 
     # Create a rotating file handler for error logs
     error_handler = RotatingFileHandler(
-        "logs/error.log", maxBytes=5 * 1024 * 1024, backupCount=5
+        "logs/error.log", maxBytes=5 * 1024 * 1024, backupCount=5, encoding="utf-8"
     )
     error_handler.setLevel(logging.ERROR)
     error_handler.setFormatter(formatter)
@@ -43,4 +43,9 @@ def setup_logging():
     console_handler = logging.StreamHandler()
     console_handler.setLevel(logging.INFO)
     console_handler.setFormatter(formatter)
+
+    # Explicitly set the encoding for the console handler
+    if hasattr(console_handler, "stream") and hasattr(console_handler.stream, "reconfigure"):
+        console_handler.stream.reconfigure(encoding="utf-8")
+
     logger.addHandler(console_handler)
