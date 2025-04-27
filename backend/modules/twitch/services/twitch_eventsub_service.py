@@ -40,7 +40,7 @@ class TwitchEventSubService:
                         if songsearch:
                             print(f"Song found: {songsearch[0]['artists']} - {songsearch[0]['name']}")
                             spotify_song_request_service.add_song_to_song_queue(song_id=songsearch[0]['id'])
-                            await self.twitch_chat_service.send_message(f"Added to queue: {songsearch[0]['artists']} - {songsearch[0]['name']}")
+                            #await self.twitch_chat_service.send_message(f"Added to queue: {songsearch[0]['artists']} - {songsearch[0]['name']}")
                         else:
                             print(f"Song not found: {event['user_input']}")
 

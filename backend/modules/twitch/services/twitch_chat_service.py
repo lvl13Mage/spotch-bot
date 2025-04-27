@@ -1,6 +1,5 @@
-
 class TwitchChatService:
-    def __init__(self, bot):
+    def __init__(self, bot):  # Use a string for the type hint
         self.bot = bot
 
     async def send_message(self, message: str):

@@ -1,3 +1,4 @@
+import logging
 from fastapi import FastAPI
 from backend.modules.auth.routes import auth, credentials
 from backend.modules.spotify.routes import song_requests
@@ -8,7 +9,6 @@ from backend.modules.twitch.twitch_bot_client import TwitchBotClient
 from backend.modules.auth.utils.token_refresh_handler import TokenRefreshHandler
 from backend.modules.twitch.handlers.eventsub_ws_handler import TwitchEventSubWebSocketHandler
 from backend.modules.routing.utils.spa_static_files import SPAStaticFiles
-import logging
 import asyncio
 import sys
 from contextlib import asynccontextmanager
@@ -17,6 +17,7 @@ from pathlib import Path
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Handle startup and shutdown processes for the app."""
+    logging.info("🔄 Initializing application lifespan...")
     await init_db()  # Initialize database tables on startup
         
     # Startup: connect bot
@@ -47,10 +48,8 @@ async def lifespan(app: FastAPI):
     else:
         logging.warning("⚠️ Twitch bot not started due to missing credentials.")
     
-    print("FastAPI server started")
-    
     yield
-    print("FastAPI server shutting down")
+    logging.info("🔄 Shutting down application lifespan...")
     # Shutdown: Refresh tokens
     await app.state.token_refresher.stop()
     app.state.token_task.cancel()
