@@ -1,8 +1,6 @@
-from backend.modules.twitch.twitch_bot_client import TwitchBotClient
-
 
 class TwitchChatService:
-    def __init__(self, bot: TwitchBotClient):
+    def __init__(self, bot):
         self.bot = bot
 
     async def send_message(self, message: str):

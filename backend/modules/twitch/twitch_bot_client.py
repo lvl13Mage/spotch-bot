@@ -11,6 +11,7 @@ from backend.modules.auth.models.twitch_token import TwitchToken
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.modules.auth.services.twitch_auth_service import TwitchAuthService
 from backend.modules.twitch.services.twitch_eventsub_service import TwitchEventSubService
+from backend.modules.twitch.services.twitch_chat_service import TwitchChatService
 from typing import Optional
 import logging
 
@@ -105,13 +106,16 @@ class TwitchBotClient(Bot):
     # --- Handlers ---
 
     async def event_channel_points_custom_reward_redemption_add(self, data: dict, db: AsyncSession):
-        handler = TwitchEventSubService(db)
+        twitch_chat_service = TwitchChatService(self)
+        handler = TwitchEventSubService(db, twitch_chat_service)
         await handler.handle_redemption(data)
 
     async def event_stream_online(self, data: dict):
-        handler = TwitchEventSubService(self.db)
+        twitch_chat_service = TwitchChatService(self)
+        handler = TwitchEventSubService(self.db, twitch_chat_service)
         await handler.handle_stream_online(data)
 
     async def event_stream_offline(self, data: dict):
-        handler = TwitchEventSubService(self.db)
+        twitch_chat_service = TwitchChatService(self)
+        handler = TwitchEventSubService(self.db, twitch_chat_service)
         await handler.handle_stream_offline(data)

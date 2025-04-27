@@ -24,6 +24,7 @@ logging.basicConfig(
 # Determine the path to the frontend/dist folder
 if getattr(sys, 'frozen', False):  # Check if running as a PyInstaller executable
     os.environ["APP_ENV"] = "production"  # Force production mode for PyInstaller builds
+    os.chdir(os.path.dirname(sys.executable))  # Set working directory to the .exe location
     
 # --- Uvicorn Config ---
 def main():
