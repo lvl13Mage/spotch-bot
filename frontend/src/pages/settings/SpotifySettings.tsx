@@ -20,7 +20,7 @@ export function SpotifySettings() {
         setClientId(data?.client_id || "");
         setClientSecret(data?.client_secret || "");
         setScopes(data?.scope || "user-read-currently-playing,user-read-playback-state,user-modify-playback-state,user-read-private,user-read-recently-played,user-library-modify,playlist-read-private,playlist-modify-public,playlist-modify-private"); // Default scopes
-        setRedirectUri(data?.redirect_uri || "http://localhost:8135/auth/spotify/callback");
+        setRedirectUri(data?.redirect_uri || "http://127.0.0.1:8135/auth/spotify/callback");
       });
   }, []);
 
@@ -61,7 +61,7 @@ export function SpotifySettings() {
       setClientId("");
       setClientSecret("");
       setScopes("user-read-currently-playing,user-read-playback-state,user-modify-playback-state,user-read-private,user-read-recently-played,user-library-modify,playlist-read-private,playlist-modify-public,playlist-modify-private"); // Reset to default scopes
-      setRedirectUri("http://localhost:8135/auth/spotify/callback");
+      setRedirectUri("http://127.0.0.1:8135/auth/spotify/callback");
     }
   };
 
