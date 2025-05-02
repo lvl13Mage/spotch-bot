@@ -1,6 +1,7 @@
 from backend.modules.spotify.spotify_client import SpotifyClient
 from backend.modules.database.database import get_db_sync
 import re
+import logging
 
 class SongRequestService:
     def __init__(self):
@@ -90,3 +91,82 @@ class SongRequestService:
             print("Song added to the queue successfully.")
         except Exception as e:
             print(f"Error adding song to the queue: {e}")
+
+    def skip_song(self):
+        """
+        Skip the current song in the Spotify queue.
+        """
+        try:
+            print("Skipping the current song.")
+            self.spotify_client.sp.next_track()
+            print("Song skipped successfully.")
+        except Exception as e:
+            print(f"Error skipping song: {e}")
+            
+    def get_current_song(self):
+        """
+        Get the current song playing on Spotify.
+        """
+        try:
+            print("Getting the current song.")
+            current_playback = self.spotify_client.sp.current_playback()
+            if current_playback and current_playback['is_playing']:
+                current_track = current_playback['item']
+                return self._get_song_result(current_track)
+            else:
+                print("No song is currently playing.")
+                return None
+        except Exception as e:
+            print(f"Error getting current song: {e}")
+            return None
+        
+    def get_song_queue(self, limit: int = 10):
+        """
+        Get the current song queue from Spotify as a list of Artist - SongName pairs.
+        Return a list of dictionaries with song details.
+        """
+        try:
+            print("Getting the song queue.")
+            current_playback = self.spotify_client.sp.queue()
+            if current_playback and current_playback['queue']:
+                queue = current_playback['queue'][:limit]
+                return [self._get_song_result(track) for track in queue]
+            else:
+                print("No song queue available.")
+                return None
+        except Exception as e:
+            print(f"Error getting song queue: {e}")
+            return None
+        
+    def get_last_songs(self, limit: int = 10):
+        """
+        Get the last songs played on Spotify.
+        """
+        try:
+            print("Getting the last songs played.")
+            current_playback = self.spotify_client.sp.current_user_recently_played()
+            if current_playback and current_playback['items']:
+                last_songs = current_playback['items'][:limit]
+                return [self._get_song_result(item['track']) for item in last_songs]
+            else:
+                print("No recently played songs available.")
+                return None
+        except Exception as e:
+            print(f"Error getting last songs: {e}")
+            return None
+    
+    def find_song(self, song_name: str, items: int = 10):
+        """
+        Find a song by its name.
+        """
+        try:
+            print(f"Finding song: {song_name}")
+            results = self._search_song_by_text(song_name, items)
+            if results:
+                return results
+            else:
+                print("No songs found.")
+                return None
+        except Exception as e:
+            print(f"Error finding song: {e}")
+            return None

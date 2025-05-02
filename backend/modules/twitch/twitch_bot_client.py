@@ -1,4 +1,6 @@
 from twitchio.ext.commands import Bot
+from twitchio.ext import commands
+from twitchio import eventsub, ChatMessage
 from twitchio.eventsub import (
     ChannelPointsRedeemAddSubscription,
     StreamOnlineSubscription,
@@ -12,6 +14,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.modules.auth.services.twitch_auth_service import TwitchAuthService
 from backend.modules.twitch.services.twitch_eventsub_service import TwitchEventSubService
 from backend.modules.twitch.services.twitch_chat_service import TwitchChatService
+from backend.modules.twitch.components.reward_commands_component import RewardCommandsComponent
 from typing import Optional
 import logging
 
@@ -78,7 +81,19 @@ class TwitchBotClient(Bot):
             credential=credential,
             twitch_token=token_obj,
                     )
-        
+    
+    async def setup_hook(self) -> None:
+        logging.info("Setting up Twitch bot...")
+        logging.info("Initial Channels: %s", self.initial_channels)
+        subscription = eventsub.ChatMessageSubscription(
+            broadcaster_user_id=self.user_id,
+            user_id=self.user_id
+        )
+        await self.subscribe_websocket(payload=subscription)
+        logging.info("Subscribed to chat messages.")
+        await self.load_module(name="backend.modules.twitch.components.reward_commands_component")
+        logging.info("Twitch bot setup complete.")
+    
     async def load_tokens(self):
         """(Optional) Reload tokens from DB, e.g., after refresh."""
         service = TwitchAuthService(self.db)
@@ -88,9 +103,25 @@ class TwitchBotClient(Bot):
         await self.add_token(token_obj.access_token.replace("oauth:", ""), token_obj.refresh_token)
 
     async def event_ready(self):
-        print(f"✅ Logged in as {self.user.name}")
+        logging.info("Twitch bot is ready.")
+        logging.info("Connected to Twitch as %s", self.user_id)
         self._ready_event.set()
+    
+    # TODO: needs to be removed to avoid infinite loop
+    async def event_message(self, payload: ChatMessage) -> None:
+        #if payload.chatter.id == self.bot_id:
+        #    logging.info("Ignoring message from bot itself.")
+        #    return
+        logging.info("Message received")
+        print(payload)
 
+        if payload.source_broadcaster is not None:
+            logging.info("Payload source broadcaster: %s", payload.source_broadcaster)
+            return
+        
+        await self.process_commands(payload)
+        
+    
     async def wait_until_ready(self):
         await self._ready_event.wait()
         print("✅ Bot is ready.")
@@ -98,7 +129,6 @@ class TwitchBotClient(Bot):
     async def start_bot(self):
         print("🚀 Starting bot...")
         await self.start()
-        print("��� Bot started.")
 
     async def stop_bot(self):
         await self.close()

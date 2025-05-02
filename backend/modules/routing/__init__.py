@@ -33,15 +33,13 @@ async def lifespan(app: FastAPI):
     if bot:
         await bot.load_tokens()
         app.state.twitch_bot = bot
-        logging.info("✅ Twitch bot started and connected")
-        bot_task = asyncio.create_task(bot.start_bot())
+        bot_task = asyncio.create_task(app.state.twitch_bot.start_bot())
         app.state.bot_task = bot_task
         
         # Start EventSub WebSocket handler
         handler = await TwitchEventSubWebSocketHandler.create(db, app.state.twitch_bot)
         app.state.eventsub_handler = handler
         app.state.eventsub_task = asyncio.create_task(handler.start())
-        logging.info("✅ Twitch bot started and connected")
         logging.info("The Website should open in your browser now.")
         logging.info("If not, please open the following URL:")
         logging.info("http://127.0.0.1:8135/static")
