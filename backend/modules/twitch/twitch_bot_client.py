@@ -112,8 +112,6 @@ class TwitchBotClient(Bot):
         #if payload.chatter.id == self.bot_id:
         #    logging.info("Ignoring message from bot itself.")
         #    return
-        logging.info("Message received")
-        print(payload)
 
         if payload.source_broadcaster is not None:
             logging.info("Payload source broadcaster: %s", payload.source_broadcaster)

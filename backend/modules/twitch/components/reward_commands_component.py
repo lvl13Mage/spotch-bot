@@ -23,9 +23,9 @@ class RewardCommandsComponent(commands.Component):
         logging.info("RewardCommandsComponent initialized.")
 
     # We use a listener in our Component to display the messages received.
-    @commands.Component.listener()
-    async def event_message(self, payload: twitchio.ChatMessage) -> None:
-        print(f"[{payload.broadcaster.name}] - {payload.chatter.name}: {payload.text}")
+    #@commands.Component.listener()
+    #async def event_message(self, payload: twitchio.ChatMessage) -> None:
+    #    print(f"[{payload.broadcaster.name}] - {payload.chatter.name}: {payload.text}")
 
     @commands.command(name="songqueue", aliases=["sq"])
     async def songqueue(self, ctx: commands.Context) -> None:

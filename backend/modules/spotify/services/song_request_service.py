@@ -13,21 +13,20 @@ class SongRequestService:
         Search for a song on Spotify.
         Differentiates between Spotify URI, Spotify URL, and full-text search.
         """
-        print(f"Searching for song: {query}")
 
         # Check if the query is a Spotify URI
         if re.match(r"^spotify:track:[a-zA-Z0-9]+$", query):
-            print("Query is a Spotify URI.")
+            logging.info(f"Query is a Spotify URI: {query}")
             return self._get_song_by_uri(query)
 
         # Check if the query is a Spotify URL
         elif re.match(r"^https?://open\.spotify\.com(/[\w-]+)?/track/[a-zA-Z0-9]+", query):
-            print("Query is a Spotify URL.")
+            logging.info(f"Query is a Spotify URL: {query}")
             return self._get_song_by_url(query)
 
         # Otherwise, perform a full-text search
         else:
-            print("Query is a full-text search.")
+            logging.info(f"Query is a full-text search: {query}")
             return self._search_song_by_text(query, items)
 
     def _get_song_by_uri(self, uri: str):
@@ -37,7 +36,7 @@ class SongRequestService:
             track = self.spotify_client.sp.track(track_id)
             return [self._get_song_result(track)]
         except Exception as e:
-            print(f"Error retrieving song by URI: {e}")
+            logging.error(f"Error retrieving song by URI: {e}")
             return None
 
     def _get_song_by_url(self, url: str):
@@ -47,7 +46,7 @@ class SongRequestService:
             track = self.spotify_client.sp.track(track_id)
             return [self._get_song_result(track)]
         except Exception as e:
-            print(f"Error retrieving song by URL: {e}")
+            logging.error(f"Error retrieving song by URL: {e}")
             return None
 
     def _search_song_by_text(self, text: str, items: int = 1):
@@ -61,10 +60,10 @@ class SongRequestService:
                     formated_results.append(formated_result)
                 return formated_results
             else:
-                print("No songs found for the given text.")
+                logging.info("No songs found for the given text.")
                 return None
         except Exception as e:
-            print(f"Error performing full-text search: {e}")
+            logging.error(f"Error performing full-text search: {e}")
             return None
         
     def _get_song_result(self, result):
@@ -86,38 +85,35 @@ class SongRequestService:
         Add a song to the Spotify song queue.
         """
         try:
-            print(f"Adding song with ID {song_id} to the queue.")
             self.spotify_client.sp.add_to_queue(song_id)
-            print("Song added to the queue successfully.")
+            logging.info(f"Song added to the queue: {song_id}")
         except Exception as e:
-            print(f"Error adding song to the queue: {e}")
+            logging.error(f"Error adding song to the queue: {e}")
 
     def skip_song(self):
         """
         Skip the current song in the Spotify queue.
         """
         try:
-            print("Skipping the current song.")
             self.spotify_client.sp.next_track()
-            print("Song skipped successfully.")
+            logging.info("Song skipped successfully.")
         except Exception as e:
-            print(f"Error skipping song: {e}")
+            logging.error(f"Error skipping song: {e}")
             
     def get_current_song(self):
         """
         Get the current song playing on Spotify.
         """
         try:
-            print("Getting the current song.")
             current_playback = self.spotify_client.sp.current_playback()
             if current_playback and current_playback['is_playing']:
                 current_track = current_playback['item']
                 return self._get_song_result(current_track)
             else:
-                print("No song is currently playing.")
+                logging.info("No song is currently playing.")
                 return None
         except Exception as e:
-            print(f"Error getting current song: {e}")
+            logging.error(f"Error getting current song: {e}")
             return None
         
     def get_song_queue(self, limit: int = 10):
@@ -126,16 +122,16 @@ class SongRequestService:
         Return a list of dictionaries with song details.
         """
         try:
-            print("Getting the song queue.")
+            logging.info("Getting the song queue.")
             current_playback = self.spotify_client.sp.queue()
             if current_playback and current_playback['queue']:
                 queue = current_playback['queue'][:limit]
                 return [self._get_song_result(track) for track in queue]
             else:
-                print("No song queue available.")
+                logging.info("No song queue available.")
                 return None
         except Exception as e:
-            print(f"Error getting song queue: {e}")
+            logging.error(f"Error getting song queue: {e}")
             return None
         
     def get_last_songs(self, limit: int = 10):
@@ -143,16 +139,16 @@ class SongRequestService:
         Get the last songs played on Spotify.
         """
         try:
-            print("Getting the last songs played.")
+            logging.info("Getting the last songs played.")
             current_playback = self.spotify_client.sp.current_user_recently_played()
             if current_playback and current_playback['items']:
                 last_songs = current_playback['items'][:limit]
                 return [self._get_song_result(item['track']) for item in last_songs]
             else:
-                print("No recently played songs available.")
+                logging.info("No recently played songs available.")
                 return None
         except Exception as e:
-            print(f"Error getting last songs: {e}")
+            logging.error(f"Error getting last songs: {e}")
             return None
     
     def find_song(self, song_name: str, items: int = 10):
@@ -160,13 +156,13 @@ class SongRequestService:
         Find a song by its name.
         """
         try:
-            print(f"Finding song: {song_name}")
+            logging.info(f"Finding song: {song_name}")
             results = self._search_song_by_text(song_name, items)
             if results:
                 return results
             else:
-                print("No songs found.")
+                logging.info("No songs found.")
                 return None
         except Exception as e:
-            print(f"Error finding song: {e}")
+            logging.error(f"Error finding song: {e}")
             return None
