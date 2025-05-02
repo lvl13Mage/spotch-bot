@@ -19,7 +19,7 @@ export function TwitchSettings() {
       .then((data) => {
         setClientId(data?.client_id || "");
         setClientSecret(data?.client_secret || "");
-        setScopes(data?.scope || "channel:read:redemptions channel:manage:redemptions channel:read:subscriptions chat:read chat:edit user:write:chat user:bot"); // Default scopes
+        setScopes(data?.scope || "channel:read:redemptions channel:manage:redemptions channel:read:subscriptions chat:read chat:edit user:write:chat user:read:chat user:bot channel:bot"); // Default scopes
         setRedirectUri(data?.redirect_uri || "http://localhost:8135/auth/twitch/callback");
       });
   }, []);
@@ -60,7 +60,7 @@ export function TwitchSettings() {
       alert(data.message);
       setClientId("");
       setClientSecret("");
-      setScopes("channel:read:redemptions channel:manage:redemptions channel:read:subscriptions chat:read chat:edit user:write:chat user:bot"); // Reset to default scopes
+      setScopes("channel:read:redemptions channel:manage:redemptions channel:read:subscriptions chat:read chat:edit user:write:chat user:read:chat user:bot channel:bot"); // Reset to default scopes
       setRedirectUri("http://localhost:8135/auth/twitch/callback");
     }
   };
