@@ -9,33 +9,32 @@ from backend.modules.twitch.twitch_bot_client import TwitchBotClient
 from backend.modules.auth.utils.token_refresh_handler import TokenRefreshHandler
 from backend.modules.twitch.handlers.eventsub_ws_handler import TwitchEventSubWebSocketHandler
 from backend.modules.routing.utils.spa_static_files import SPAStaticFiles
+from backend.modules.routing.utils.lifecycle import shutdown_tasks, startup_tasks
 import asyncio
 import sys
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """Handle startup and shutdown processes for the app."""
-    logging.info("🔄 Initializing application lifespan...")
+async def startup_tasks(app: FastAPI):
+    """Initialize all tasks and resources during startup."""
+    logging.info("🔄 Starting application tasks...")
     await init_db()  # Initialize database tables on startup
-        
+
     # Startup: connect bot
     db = await anext(get_db())  # get one-time AsyncSession
-    
+
     # Handle Token Refresher
     token_refresher = TokenRefreshHandler()
     app.state.token_refresher = token_refresher
     app.state.token_task = asyncio.create_task(token_refresher.start())
-    
+
     # Handle Twitch Bot
     bot = await TwitchBotClient.create(db)
     if bot:
         await bot.load_tokens()
         app.state.twitch_bot = bot
-        bot_task = asyncio.create_task(app.state.twitch_bot.start_bot())
-        app.state.bot_task = bot_task
-        
+        app.state.bot_task = asyncio.create_task(app.state.twitch_bot.start_bot())
+
         # Start EventSub WebSocket handler
         handler = await TwitchEventSubWebSocketHandler.create(db, app.state.twitch_bot)
         app.state.eventsub_handler = handler
@@ -45,29 +44,71 @@ async def lifespan(app: FastAPI):
         logging.info("http://127.0.0.1:8135/static")
     else:
         logging.warning("⚠️ Twitch bot not started due to missing credentials.")
-    
-    yield
-    logging.info("🔄 Shutting down application lifespan...")
+
+
+async def shutdown_tasks(app: FastAPI):
+    """Clean up all tasks and resources during shutdown."""
+    logging.info("🔄 Shutting down application tasks...")
+
     # Shutdown: Refresh tokens
-    await app.state.token_refresher.stop()
-    app.state.token_task.cancel()
-    try:
-        await app.state.token_task
-    except asyncio.CancelledError:
-        pass
+    if hasattr(app.state, "token_refresher"):
+        await app.state.token_refresher.stop()
+    if hasattr(app.state, "token_task"):
+        app.state.token_task.cancel()
+        try:
+            await app.state.token_task
+        except asyncio.CancelledError:
+            pass
+
     # Shutdown: EventSub WebSocket handler
-    await app.state.eventsub_handler.stop()
-    app.state.eventsub_task.cancel()
-    try:
-        await app.state.eventsub_task
-    except asyncio.CancelledError:
-        pass    
+    if hasattr(app.state, "eventsub_handler"):
+        await app.state.eventsub_handler.stop()
+    if hasattr(app.state, "eventsub_task"):
+        app.state.eventsub_task.cancel()
+        try:
+            await app.state.eventsub_task
+        except asyncio.CancelledError:
+            pass
+
     # Shutdown: Twitch Bot
-    await bot.stop_bot()
-    bot_task.cancel()
+    if hasattr(app.state, "twitch_bot"):
+        await app.state.twitch_bot.stop_bot()
+    if hasattr(app.state, "bot_task"):
+        app.state.bot_task.cancel()
+
     # Shutdown: Database
     await engine.dispose()  # Properly shut down the database engine
     logging.info("🛑 Twitch bot shutdown and DB engine closed")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Handle startup and shutdown processes for the app."""
+    await startup_tasks(app)
+    try:
+        yield
+    finally:
+        await shutdown_tasks(app)
+
+
+# Restart endpoint
+from fastapi import APIRouter, HTTPException, Request
+
+router = APIRouter()
+
+@router.post("/restart-app")
+async def restart_app(request: Request):
+    """Endpoint to restart the application."""
+    app = request.app  # Access the FastAPI app instance from the request
+    try:
+        logging.info("🔄 Restarting application...")
+        await shutdown_tasks(app)
+        await startup_tasks(app)
+        logging.info("✅ Application restarted successfully.")
+        return {"message": "Application restarted successfully."}
+    except Exception as e:
+        logging.error(f"Error restarting application: {e}")
+        raise HTTPException(status_code=500, detail="Failed to restart application.")
 
 
 print("FastAPI server starting...")
@@ -94,3 +135,4 @@ app.include_router(credentials.router, prefix="/credentials")
 app.include_router(chat.router, prefix="/twitch/chat")
 app.include_router(rewards.router, prefix="/twitch/rewards")
 app.include_router(db.router, prefix="/db")
+app.include_router(router, prefix="/admin")

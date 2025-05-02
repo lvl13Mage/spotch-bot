@@ -20,7 +20,7 @@ export function TwitchSettings() {
         setClientId(data?.client_id || "");
         setClientSecret(data?.client_secret || "");
         setScopes(data?.scope || "channel:read:redemptions channel:manage:redemptions channel:read:subscriptions chat:read chat:edit user:write:chat user:read:chat user:bot channel:bot"); // Default scopes
-        setRedirectUri(data?.redirect_uri || "http://localhost:8135/auth/twitch/callback");
+        setRedirectUri(data?.redirect_uri || "http://127.0.0.1:8135/auth/twitch/callback");
       });
   }, []);
 
@@ -61,7 +61,7 @@ export function TwitchSettings() {
       setClientId("");
       setClientSecret("");
       setScopes("channel:read:redemptions channel:manage:redemptions channel:read:subscriptions chat:read chat:edit user:write:chat user:read:chat user:bot channel:bot"); // Reset to default scopes
-      setRedirectUri("http://localhost:8135/auth/twitch/callback");
+      setRedirectUri("http://127.0.0.1:8135/auth/twitch/callback");
     }
   };
 
