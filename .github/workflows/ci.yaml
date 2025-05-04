@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+    except:
+      - 'docs/**'
+      - '.github/workflows/docs.yaml'
   pull_request:
     branches:
       - main
