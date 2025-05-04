@@ -1,4 +1,4 @@
-name: Build Distributables and Deploy Docs
+name: Build Distributables
 
 on:
   push:
