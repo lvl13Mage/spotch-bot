@@ -13,11 +13,13 @@ function HomepageHeader() {
   const {siteConfig} = useDocusaurusContext();
   const {colorMode} = useColorMode();
 
-  if (!colorMode) {
-    // wait for the color mode to be available
+  // Ensure this component only renders on the client
+  const isBrowser = typeof window !== 'undefined';
+
+  if (!isBrowser || !colorMode) {
+    // Avoid rendering during SSR or before colorMode is initialized
     return null;
   }
-  console.log('colorMode', colorMode);
 
   const isDarkMode = colorMode === 'dark';
 
@@ -25,8 +27,6 @@ function HomepageHeader() {
     ? require('@site/static/img/logo-transparent-purple-small.png').default
     : require('@site/static/img/logo-transparent-white-small.png').default;
 
-
-  console.log('logoSrc', logoSrc);
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
