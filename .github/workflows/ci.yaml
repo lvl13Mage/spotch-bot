@@ -7,10 +7,21 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      build:
+        description: 'Build Linux and Windows executables'
+        required: true
+        default: 'true'
+      deploy:
+        description: 'Deploy Docusaurus docs'
+        required: true
+        default: 'true'
 
 jobs:
   build-linux:
     name: Build Linux Executable
+    if: ${{ github.event.inputs.build == 'true' }} || github.event_name == 'push' || github.event_name == 'pull_request'
     runs-on: ubuntu-latest
 
     steps:
@@ -58,6 +69,7 @@ jobs:
 
   build-windows:
     name: Build Windows Executable
+    if: ${{ github.event.inputs.build == 'true' }} || github.event_name == 'push' || github.event_name == 'pull_request'
     runs-on: windows-latest
 
     steps:
@@ -131,6 +143,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GIT_USER: ${{ secrets.GIT_USER }}
+          GIT_USER_NAME: ${{ secrets.GIT_USER }}
+          GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
         run: |
           cd docs
           npm run deploy
