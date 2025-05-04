@@ -10,14 +10,13 @@ import {useColorMode} from '@docusaurus/theme-common'; // Import the useColorMod
 import styles from './index.module.css';
 
 function HomepageHeader() {
-  const {siteConfig} = useDocusaurusContext();
   const {colorMode} = useColorMode();
 
   // Ensure this component only renders on the client
   const isBrowser = typeof window !== 'undefined';
 
-  if (!isBrowser || !colorMode) {
-    // Avoid rendering during SSR or before colorMode is initialized
+  if (!isBrowser) {
+    // Avoid rendering during SSR
     return null;
   }
 
