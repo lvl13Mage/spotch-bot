@@ -26,4 +26,4 @@ Visit the **[Spotch Bot Tutorial](https://spotch.live/docs/intro)** to learn how
 
 ---
 
-For more information, visit **[spotch.live](https://spotch.live)** or check out the [GitHub repository](https://github.com/lvl13mage/spotify-bot2).
+For more information, visit **[spotch.live](https://spotch.live)** or check out the [GitHub repository](https://github.com/lvl13mage/spotch-bot).
