@@ -17,14 +17,11 @@ function HomepageHeader() {
     // wait for the color mode to be available
     return null;
   }
-  console.log('colorMode', colorMode);
 
   const logoSrc = isDarkMode
     ? require('@site/static/img/logo-transparent-purple-small.png').default
     : require('@site/static/img/logo-transparent-white-small.png').default;
 
-
-  console.log('logoSrc', logoSrc);
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
