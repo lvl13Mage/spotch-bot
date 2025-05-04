@@ -13,13 +13,18 @@ function HomepageHeader() {
   const {siteConfig} = useDocusaurusContext();
   const {colorMode} = useColorMode();
 
-  // Fallback to avoid showing the wrong logo before colorMode is determined
-  const isDarkMode = colorMode === 'dark' || (!colorMode && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  if (!colorMode) {
+    // wait for the color mode to be available
+    return null;
+  }
+  console.log('colorMode', colorMode);
 
   const logoSrc = isDarkMode
     ? require('@site/static/img/logo-transparent-purple-small.png').default
     : require('@site/static/img/logo-transparent-white-small.png').default;
 
+
+  console.log('logoSrc', logoSrc);
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
