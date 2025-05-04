@@ -78,12 +78,12 @@ const config: Config = {
 
   themeConfig: {
     // Replace with your project's social card
-    image: 'img/spotch-bot-social-card.jpg',
+    image: 'img/logo-fullcolor-banner.png',
     navbar: {
       title: 'Spotch Bot',
       logo: {
         alt: 'Spotch Bot Logo',
-        src: 'img/logo-notext-fullcolor-banner.png',
+        src: 'img/logo-notext-fullcolor-small.png',
       },
       items: [
         {
