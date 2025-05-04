@@ -117,10 +117,11 @@ jobs:
           name: spotify-bot-windows
           path: dist/spotify-bot.exe
 
-  deploy-docs:
+  build-docs:
     name: Deploy Docusaurus Docs
     if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.docs == true }}
     runs-on: ubuntu-latest
+    working-directory: docs
     needs: [build-linux, build-windows]
 
     steps:
@@ -133,12 +134,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: 'npm'
 
       # Install dependencies and build the Docusaurus site
       - name: Install and Build Docusaurus
         run: |
-          cd docs
-          npm install
+          npm ci
           npm run build
 
       # Deploy to GitHub Pages
@@ -151,3 +152,28 @@ jobs:
         run: |
           cd docs
           npm run deploy
+
+      - name: Upload Build Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build
+
+    deploy-docs:
+      name: Deploy to GitHub Pages
+      needs: build-docs
+
+      # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+      permissions:
+        pages: write # to deploy to Pages
+        id-token: write # to verify the deployment originates from an appropriate source
+
+      # Deploy to the github-pages environment
+      environment:
+        name: github-pages
+        url: ${{ steps.deployment.outputs.page_url }}
+
+      runs-on: ubuntu-latest
+      steps:
+        - name: Deploy to GitHub Pages
+          id: deployment
+          uses: actions/deploy-pages@v4
