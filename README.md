@@ -1,3 +1,5 @@
+![img alt](/docs/static/logo-fullcolor-small.png)
+
 # Spotch Bot
 
 Welcome to **Spotch Bot**, the ultimate Twitch and Spotify integration bot! This repository contains the source code for Spotch Bot, a tool designed to enhance your Twitch streams with seamless Spotify song requests, smart moderation, and powerful API integrations.
