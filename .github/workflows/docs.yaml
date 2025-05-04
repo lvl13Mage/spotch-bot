@@ -4,9 +4,15 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'docs/**'
+      - '.github/workflows/docs.yaml'
   pull_request:
     branches:
       - main
+    paths:
+      - 'docs/**'
+      - '.github/workflows/docs.yaml'
   workflow_dispatch:
 jobs:
   build-docs:
