@@ -12,6 +12,10 @@ on:
       build:
         description: 'Build Linux and Windows executables'
         required: true
+        type: choice
+        options:
+          - 'true'
+          - 'false'
         default: 'true'
       deploy:
         description: 'Deploy Docusaurus docs'
