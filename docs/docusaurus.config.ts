@@ -83,7 +83,7 @@ const config: Config = {
       title: 'Spotch Bot',
       logo: {
         alt: 'Spotch Bot Logo',
-        src: 'img/logo-notext-fullcolor-small.png',
+        src: 'img/logo-notext-fullcolor-banner.png',
       },
       items: [
         {
