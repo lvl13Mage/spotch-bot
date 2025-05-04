@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="460" height="300" src="./docs/static/img/logo-fullcolor-small.png">
+  <img width="300" height="300" src="./docs/static/img/logo-fullcolor-small.png">
 </p>
 
 # Spotch Bot
