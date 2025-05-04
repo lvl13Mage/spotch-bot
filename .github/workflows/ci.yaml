@@ -121,7 +121,7 @@ jobs:
     name: Deploy Docusaurus Docs
     if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.docs == true }}
     runs-on: ubuntu-latest
-    working-directory: docs
+    working-directory: ./docs
     needs: [build-linux, build-windows]
 
     steps:
@@ -160,6 +160,7 @@ jobs:
 
     deploy-docs:
       name: Deploy to GitHub Pages
+      working-directory: ./docs
       needs: build-docs
 
       # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
