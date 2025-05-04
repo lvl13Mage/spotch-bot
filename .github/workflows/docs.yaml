@@ -20,11 +20,11 @@ jobs:
 
       # Set up Node.js
       - name: Set up Node.js
-        working-directory: ./docs
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: 'npm'
+          cache-dependency-path: ./docs/package-lock.json
 
       # Install dependencies and build the Docusaurus site
       - name: Install and Build Docusaurus
