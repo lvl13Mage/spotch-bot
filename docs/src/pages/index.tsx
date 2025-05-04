@@ -5,35 +5,24 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import HomepageFeatures from '@site/src/components/HomepageFeatures';
 import Translate from '@docusaurus/Translate';
-import {useColorMode} from '@docusaurus/theme-common'; // Import the useColorMode hook
+import {useColorMode} from '@docusaurus/theme-common';
+import ThemedImage from '@theme/ThemedImage'; // Import ThemedImage component
 
 import styles from './index.module.css';
 
 function HomepageHeader() {
-  const {colorMode} = useColorMode();
-
-  // Ensure this component only renders on the client
-  const isBrowser = typeof window !== 'undefined';
-
-  if (!isBrowser) {
-    // Avoid rendering during SSR
-    return null;
-  }
-
-  const isDarkMode = colorMode === 'dark';
-
-  const logoSrc = isDarkMode
-    ? require('@site/static/img/logo-transparent-purple-small.png').default
-    : require('@site/static/img/logo-transparent-white-small.png').default;
+  const logoSources = {
+    light: require('@site/static/img/logo-transparent-white-small.png').default,
+    dark: require('@site/static/img/logo-transparent-purple-small.png').default,
+  };
 
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
-        <img
-          src={logoSrc}
+        <ThemedImage
+          sources={logoSources}
           alt="Spotch Bot Logo"
           className={clsx('hero__logo', styles.heroLogo)}
-          role="img"
           style={{
             height: '300px',
             borderRadius: '15px',
