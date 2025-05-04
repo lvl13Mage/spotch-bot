@@ -13,6 +13,11 @@ function HomepageHeader() {
   const {siteConfig} = useDocusaurusContext();
   const {colorMode} = useColorMode(); // Get the current color mode
 
+  // If colorMode is undefined, don't render the logo yet
+  if (!colorMode) {
+    return null;
+  }
+
   // Choose the logo based on the color mode
   const logoSrc =
     colorMode === 'dark'
