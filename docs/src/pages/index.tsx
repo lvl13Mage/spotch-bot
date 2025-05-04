@@ -4,19 +4,34 @@ import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import HomepageFeatures from '@site/src/components/HomepageFeatures';
-import Heading from '@theme/Heading';
 import Translate from '@docusaurus/Translate';
+import {useColorMode} from '@docusaurus/theme-common'; // Import the useColorMode hook
 
 import styles from './index.module.css';
 
 function HomepageHeader() {
   const {siteConfig} = useDocusaurusContext();
+  const {colorMode} = useColorMode(); // Get the current color mode
+
+  // Choose the logo based on the color mode
+  const logoSrc =
+    colorMode === 'dark'
+      ? require('@site/static/img/logo-transparent-purple-small.png').default
+      : require('@site/static/img/logo-transparent-white-small.png').default;
+
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
-        <Heading as="h1" className="hero__title">
-          <Translate id="homepage.header.title" />
-        </Heading>
+        <img
+          src={logoSrc}
+          alt="Spotch Bot Logo"
+          className={clsx('hero__logo', styles.heroLogo)}
+          role="img"
+          style={{
+            height: '300px',
+            borderRadius: '15px',
+          }}
+        />
         <p className="hero__subtitle">
           <Translate id="homepage.header.subtitle" />
         </p>
