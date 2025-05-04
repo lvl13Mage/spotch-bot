@@ -1,4 +1,6 @@
-![img alt](/docs/static/logo-fullcolor-small.png)
+<p align="center">
+  <img width="460" height="300" src="docs/static/logo-fullcolor-small.png">
+</p>
 
 # Spotch Bot
 
