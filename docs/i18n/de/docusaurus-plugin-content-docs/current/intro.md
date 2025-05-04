@@ -2,46 +2,96 @@
 sidebar_position: 1
 ---
 
-# Tutorial Intro
+# Tutorial
 
-Let's discover **Docusaurus in less than 5 minutes**.
+Lass uns Spotch Bot zusammen einrichten!
 
-## Getting Started
+## Installation
 
-Get started by **creating a new site**. (deutsch)
+Lade die neueste Version von Spotch Bot von den Releases herunter:  
+[Releases](https://github.com/lvl13Mage/spotch-bot/tags)
 
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
+Wir unterstützen Linux und Windows.
 
-### What you'll need
+Entpacke den ZIP-Inhalt in ein Verzeichnis deiner Wahl.
 
-- [Node.js](https://nodejs.org/en/download/) version 18.0 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
+## Bot starten
 
-## Generate a new site
+Führe die Datei im Verzeichnis aus, um den Spotch Bot zu starten.
 
-Generate a new Docusaurus site using the **classic template**.
+Es wird ein Terminalfenster und dein Browser mit einem neuen Tab geöffnet.
 
-The classic template will automatically be added to your project after you run the command:
+:::note
+In zukünftigen Versionen könnten wir das Terminalfenster entfernen.
+:::
+![img alt](/img/tutorial/spotchbot-firstpage.png)
 
-```bash
-npm init docusaurus@latest my-website classic
-```
+## Konfiguration
 
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
+Damit Spotch Bot funktioniert, musst du eine Spotify Developer App und eine Twitch Developer App einrichten.
 
-The command also installs all necessary dependencies you need to run Docusaurus.
+### Spotify Developer App einrichten
 
-## Start your site
+1. Navigiere zu den Spotify-Einstellungen in Spotch Bot.  
+![img alt](/img/tutorial/spotch-spotify-setup.png)
 
-Run the development server:
+2. Besuche die Spotify Developer Website und melde dich an:  
+[https://developer.spotify.com/](https://developer.spotify.com/)
 
-```bash
-cd my-website
-npm run start
-```
+3. Gehe nach dem Anmelden zum Dashboard:  
+[https://developer.spotify.com/dashboard](https://developer.spotify.com/dashboard)
 
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
+4. Klicke auf "App erstellen"  
+![img alt](/img/tutorial/spotify-dev-creation1.png)
 
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
+5. Fülle die Informationen aus  
+⚠️ Stelle sicher, dass du die "Redirect URI" aus Schritt 1 einfügst  
+![img alt](/img/tutorial/spotify-dev-creation2.png)
 
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+6. Kopiere die Client-ID und das Client-Geheimnis in die Spotch Bot App  
+![img alt](/img/tutorial/spotify-dev-creation3.png)  
+![img alt](/img/tutorial/spotify-dev-creation4.png)
+
+7. Klicke auf Speichern und authentifiziere dich dann in der Spotch App  
+Ein neuer Tab sollte sich öffnen und um Erlaubnis bitten.  
+Nach der Annahme solltest du dies sehen:  
+```{"Token erhalten":true}```
+
+Deine Spotify-App ist jetzt authentifiziert!
+
+### Twitch Developer App einrichten
+
+1. Navigiere zu den Twitch-Einstellungen in Spotch Bot.  
+![img alt](/img/tutorial/spotch-twitch-setup.png)
+
+2. Besuche die Twitch Developer Website und melde dich an:  
+[https://dev.twitch.tv/](https://dev.twitch.tv/)
+
+3. Gehe nach dem Anmelden zur Konsole -> Anwendungsbereich:  
+[https://dev.twitch.tv/console/apps](https://dev.twitch.tv/console/apps)
+
+4. Klicke auf "+ Deine Anwendung registrieren"  
+![img alt](/img/tutorial/twitch-dev-create.png)
+
+5. Fülle die Informationen aus  
+⚠️ Stelle sicher, dass du die "Redirect URI" aus Schritt 1 einfügst  
+![img alt](/img/tutorial/twitch-dev-create2.png)
+
+6. Wenn die App erstellt wurde, klicke auf "Verwalten"  
+![img alt](/img/tutorial/twitch-dev-create3.png)
+
+7. Kopiere die Client-ID und das Client-Geheimnis in die Spotch App  
+⚠️ Drücke auf "Neues Geheimnis", um das Geheimnis sichtbar zu machen  
+![img alt](/img/tutorial/twitch-dev-create4.png)  
+![img alt](/img/tutorial/twitch-dev-create5.png)
+
+8. Klicke auf Speichern und authentifiziere dich in der Spotch App  
+Ein neuer Tab sollte sich öffnen und um Erlaubnis bitten.  
+Nach der Annahme solltest du dies sehen:  
+```{"message":"Zugriffstoken erhalten und Anwendung erfolgreich neu gestartet!"}```
+
+Deine Twitch-App ist jetzt authentifiziert!
+
+### Kanalpunkt-Belohnungen
+
+![img alt](/img/tutorial/spotchbot-rewards-list.png)

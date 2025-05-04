@@ -1,7 +1,4 @@
 {
-  "homepage.header.title": {
-    "message": "Willkommen bei Spotch Bot"
-  },
   "homepage.header.subtitle": {
     "message": "Der ultimative Twitch- und Spotify-Integrations-Bot"
   },
