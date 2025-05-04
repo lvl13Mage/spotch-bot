@@ -14,7 +14,7 @@ on:
         required: true
         type: boolean
         default: true
-      deploy:
+      docs:
         description: 'Deploy Docusaurus docs'
         required: true
         type: boolean
@@ -23,7 +23,7 @@ on:
 jobs:
   build-linux:
     name: Build Linux Executable
-    if: ${{ github.event.inputs.build }} || github.event_name == 'push' || github.event_name == 'pull_request'
+    if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.build == true }}
     runs-on: ubuntu-latest
 
     steps:
@@ -71,7 +71,7 @@ jobs:
 
   build-windows:
     name: Build Windows Executable
-    if: ${{ github.event.inputs.build }} || github.event_name == 'push' || github.event_name == 'pull_request'
+    if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.build == true }}
     runs-on: windows-latest
 
     steps:
@@ -119,7 +119,7 @@ jobs:
 
   deploy-docs:
     name: Deploy Docusaurus Docs
-    if: ${{ github.event.inputs.deploy }} || github.event_name == 'push' || github.event_name == 'pull_request'
+    if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.docs == true }}
     runs-on: ubuntu-latest
     needs: [build-linux, build-windows]
 
