@@ -121,7 +121,6 @@ jobs:
     name: Deploy Docusaurus Docs
     if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.docs == true }}
     runs-on: ubuntu-latest
-    working-directory: ./docs
     needs: [build-linux, build-windows]
 
     steps:
@@ -138,29 +137,19 @@ jobs:
 
       # Install dependencies and build the Docusaurus site
       - name: Install and Build Docusaurus
+        working-directory: ./docs
         run: |
           npm ci
           npm run build
 
-      # Deploy to GitHub Pages
-      - name: Deploy to GitHub Pages
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GIT_USER: ${{ secrets.GIT_USER }}
-          GIT_USER_NAME: ${{ secrets.GIT_USER }}
-          GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
-        run: |
-          cd docs
-          npm run deploy
-
       - name: Upload Build Artifact
         uses: actions/upload-pages-artifact@v3
+        working-directory: ./docs
         with:
           path: build
 
   deploy-docs:
     name: Deploy to GitHub Pages
-    working-directory: ./docs
     needs: build-docs
 
     # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
