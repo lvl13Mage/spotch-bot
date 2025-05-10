@@ -32,8 +32,9 @@ def setup_logging():
     error_handler.setFormatter(formatter)
 
     # Add the sensitive data filter
-    app_handler.addFilter(SensitiveDataFilter())
-    error_handler.addFilter(SensitiveDataFilter())
+    sensitive_filter = SensitiveDataFilter()
+    app_handler.addFilter(sensitive_filter)
+    error_handler.addFilter(sensitive_filter)
 
     # Add handlers to the logger
     logger.addHandler(app_handler)
@@ -43,9 +44,15 @@ def setup_logging():
     console_handler = logging.StreamHandler()
     console_handler.setLevel(logging.INFO)
     console_handler.setFormatter(formatter)
-
-    # Explicitly set the encoding for the console handler
-    if hasattr(console_handler, "stream") and hasattr(console_handler.stream, "reconfigure"):
-        console_handler.stream.reconfigure(encoding="utf-8")
-
+    console_handler.addFilter(sensitive_filter)  # Add the filter to the console handler
     logger.addHandler(console_handler)
+
+    # Explicitly add the filter to uvicorn loggers
+    uvicorn_access_logger = logging.getLogger("uvicorn.access")
+    uvicorn_access_logger.addFilter(sensitive_filter)
+
+    uvicorn_error_logger = logging.getLogger("uvicorn.error")
+    uvicorn_error_logger.addFilter(sensitive_filter)
+
+    uvicorn_logger = logging.getLogger("uvicorn")
+    uvicorn_logger.addFilter(sensitive_filter)

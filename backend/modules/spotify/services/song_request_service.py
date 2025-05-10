@@ -4,9 +4,9 @@ import re
 import logging
 
 class SongRequestService:
-    def __init__(self):
+    def __init__(self, app):
         self.db = get_db_sync()
-        self.spotify_client = SpotifyClient(self.db)
+        self.spotify_client = SpotifyClient(self.db, app)
 
     def search_song(self, query: str, items: int = 1):
         """

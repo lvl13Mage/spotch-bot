@@ -4,6 +4,7 @@ from backend.modules.database.database import init_db, engine, get_db
 from backend.modules.twitch.twitch_bot_client import TwitchBotClient
 from backend.modules.auth.utils.token_refresh_handler import TokenRefreshHandler
 from backend.modules.twitch.handlers.eventsub_ws_handler import TwitchEventSubWebSocketHandler
+from backend.modules.spotify.spotify_oauth_manager import SpotifyOAuthManager
 import asyncio
 import logging
 
@@ -14,21 +15,30 @@ async def startup_tasks(app: FastAPI):
 
     # Startup: connect bot
     db = await anext(get_db())  # get one-time AsyncSession
+    
+    # Create SpotifyOAuthManager instance
+    app.state.spotify_oauth_manager = SpotifyOAuthManager().get_auth_manager()
 
     # Handle Token Refresher
-    token_refresher = TokenRefreshHandler()
+    token_refresher = TokenRefreshHandler(app)
     app.state.token_refresher = token_refresher
-    app.state.token_task = asyncio.create_task(token_refresher.start())
+    initial_refesh = await token_refresher.initial_refresh()  # Initial token refresh
+    if initial_refesh:
+        app.state.token_task = asyncio.create_task(token_refresher.start())
+    else:
+        logging.warning("⚠️ Initial token refresh failed. Token refresher not started.")
+        raise Exception("Initial token refresh failed.")
 
     # Handle Twitch Bot
-    bot = await TwitchBotClient.create(db)
+    logging.info("🔄 Starting Twitch bot...")
+    bot = await TwitchBotClient.create(db, app)
     if bot:
         await bot.load_tokens()
         app.state.twitch_bot = bot
-        app.state.bot_task = asyncio.create_task(bot.start_bot())
+        app.state.bot_task = asyncio.create_task(app.state.twitch_bot.start_bot())
 
         # Start EventSub WebSocket handler
-        handler = await TwitchEventSubWebSocketHandler.create(db, bot)
+        handler = await TwitchEventSubWebSocketHandler.create(db, app.state.twitch_bot)
         app.state.eventsub_handler = handler
         app.state.eventsub_task = asyncio.create_task(handler.start())
         logging.info("The Website should open in your browser now.")

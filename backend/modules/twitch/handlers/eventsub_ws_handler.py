@@ -133,7 +133,7 @@ class TwitchEventSubWebSocketHandler:
     async def _dispatch_event(self, event_type: str, event: dict):
         if event_type == "channel.channel_points_custom_reward_redemption.add":
             twitch_chat_service = TwitchChatService( self.bot)
-            service = TwitchEventSubService(self.db, twitch_chat_service)
+            service = TwitchEventSubService(self.db, twitch_chat_service, self.bot.app)
             await service.handle_redemption(event)
         else:
             logging.warning(f"Unhandled EventSub event type: {event_type}")

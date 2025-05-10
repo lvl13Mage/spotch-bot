@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 import logging
@@ -19,16 +19,16 @@ async def set_credentials(data: TwitchCredentialInput, db: AsyncSession = Depend
     
 
 @router.post("/spotify/set")
-def set_spotify_credentials(data: SpotifyCredentialInput, db: Session = Depends(get_db_sync)):
+def set_spotify_credentials(request: Request, data: SpotifyCredentialInput, db: Session = Depends(get_db_sync)):
     """Set or update API credentials for a service (Spotify)."""
-    spotify_auth_service = SpotifyAuthService(db)
+    spotify_auth_service = SpotifyAuthService(db, request.app)
     spotify_auth_service.set_credentials(data)
     return {"message": "Spotify credentials updated successfully!"}
 
 @router.get("/spotify/credentials")
-def get_spotify_credentials(db: Session = Depends(get_db_sync)):
+def get_spotify_credentials(request: Request, db: Session = Depends(get_db_sync)):
     """Fetch Spotify credentials from the database."""
-    spotify_auth_service = SpotifyAuthService(db)
+    spotify_auth_service = SpotifyAuthService(db, request.app)
     credentials = spotify_auth_service.get_credentials()
     if not credentials:
         return {"clientId": "", "clientSecret": ""}
@@ -52,16 +52,16 @@ async def twitch_credentials_status(db: AsyncSession = Depends(get_db)):
     return {"twitch_credentials_set": bool(credentials)}
 
 @router.get("/status/spotify")
-def spotify_credentials_status(db: Session = Depends(get_db_sync)):
+def spotify_credentials_status(request: Request, db: Session = Depends(get_db_sync)):
     """Check if Spotify credentials are set."""
-    service = SpotifyAuthService(db)
+    service = SpotifyAuthService(db, request.app)
     credentials = service.get_credentials()
     return {"spotify_credentials_set": bool(credentials)}
 
 @router.delete("/spotify/delete")
-def delete_spotify_credentials(db: Session = Depends(get_db_sync)):
+def delete_spotify_credentials(request: Request, db: Session = Depends(get_db_sync)):
     """Delete Spotify credentials and token using the service."""
-    spotify_auth_service = SpotifyAuthService(db)
+    spotify_auth_service = SpotifyAuthService(db, request.app)
     spotify_auth_service.delete_credentials_and_token()
     return {"message": "Spotify credentials and token deleted successfully."}
 

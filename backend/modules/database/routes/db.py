@@ -1,8 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from backend.modules.database.database import get_db, get_db_sync
-from backend.modules.auth.services.twitch_auth_service import TwitchAuthService
-from backend.modules.auth.services.spotify_auth_service import SpotifyAuthService
 from backend.modules.database.utils.migration_handler import MigrationHandler
 import logging
 

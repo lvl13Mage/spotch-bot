@@ -7,9 +7,10 @@ from backend.modules.spotify.services.song_request_service import SongRequestSer
 from backend.modules.twitch.services.twitch_chat_service import TwitchChatService
 
 class TwitchEventSubService:
-    def __init__(self, db, twitch_chat_service):
+    def __init__(self, db, twitch_chat_service, app):
         self.db = db
         self.twitch_chat_service = twitch_chat_service
+        self.app = app
         
     async def get_rewards(self, active_only: bool = True) -> list[Reward]:
         """Retrieve rewards from the database. Optionally filter by active status."""
@@ -35,7 +36,7 @@ class TwitchEventSubService:
                 match reward.type:
                     case RewardType.SONG_QUEUE_ADD.technical_label:
                         print(f"Adding song to queue: {event['user_input']}")
-                        spotify_song_request_service = SongRequestService()
+                        spotify_song_request_service = SongRequestService(self.app)
                         songsearch = spotify_song_request_service.search_song(event['user_input'])
                         if songsearch:
                             print(f"Song found: {songsearch[0]['artists']} - {songsearch[0]['name']}")

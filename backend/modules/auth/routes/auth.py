@@ -50,17 +50,25 @@ async def verify_and_refresh_token(db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/spotify/authorize")
-def spotify_auth(db: Session = Depends(get_db_sync)):
+def spotify_auth(request: Request, db: Session = Depends(get_db_sync)):
     """Returns Spotify OAuth authorization URL"""
-    spotify_auth_service = SpotifyAuthService(db)
+    spotify_auth_service = SpotifyAuthService(db, request.app)
     response = spotify_auth_service.spotify_auth_flow()
     
     return response
 
 @router.get("/spotify/callback")
-async def spotify_callback(code: str, db: Session = Depends(get_db_sync)):
+async def spotify_callback(code: str, request: Request, db: Session = Depends(get_db_sync)):
     if not code:
         return {"message": "No code provided in the request."}
-    spotify_auth_service = SpotifyAuthService(db)
+    spotify_auth_service = SpotifyAuthService(db, request.app)
     response = spotify_auth_service.get_access_token(code)
+    
+    # Restart the app lifecycle
+    app = request.app  # Access the FastAPI app instance
+    logging.info("🔄 Restarting application lifecycle after Twitch callback...")
+    await shutdown_tasks(app)  # Call shutdown_tasks from routing/__init__.py
+    await startup_tasks(app)  # Call startup_tasks from routing/__init__.py
+    logging.info("✅ Application lifecycle restarted successfully.")
+    
     return response

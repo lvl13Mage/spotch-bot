@@ -6,7 +6,7 @@ from backend.modules.spotify.services.song_request_service import SongRequestSer
 class RewardCommandsComponent(commands.Component):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
-        self.song_request_service = SongRequestService()
+        self.song_request_service = SongRequestService(bot.app)
         
         self.number_emojis = [
             "0\uFE0F\u20E3",
@@ -112,3 +112,4 @@ class RewardCommandsComponent(commands.Component):
 # This is our entry point for the module.
 async def setup(bot: commands.Bot) -> None:
     await bot.add_component(RewardCommandsComponent(bot))
+    

@@ -17,6 +17,7 @@ from backend.modules.twitch.services.twitch_chat_service import TwitchChatServic
 from backend.modules.twitch.components.reward_commands_component import RewardCommandsComponent
 from typing import Optional
 import logging
+from fastapi import FastAPI
 
 class TwitchBotClient(Bot):
 
@@ -28,10 +29,12 @@ class TwitchBotClient(Bot):
         user_id: str,
         bot_id: str,
         db: AsyncSession,
+        app: FastAPI,
         credential: TwitchCredential,
         twitch_token: TwitchToken,
     ):
         self.db = db
+        self.app = app
         self.client_id = client_id
         self.user_id = user_id
         self.channel_name = initial_channels[0]
@@ -61,7 +64,7 @@ class TwitchBotClient(Bot):
         
 
     @classmethod
-    async def create(cls, db: AsyncSession) -> Optional["TwitchBotClient"]:
+    async def create(cls, db: AsyncSession, app: FastAPI) -> Optional["TwitchBotClient"]:
         service = TwitchAuthService(db)
         credential = await service.get_twitch_credentials()
 
@@ -78,6 +81,7 @@ class TwitchBotClient(Bot):
             user_id=token_obj.user_id,
             bot_id=token_obj.user_id,
             db=db,
+            app=app,
             credential=credential,
             twitch_token=token_obj,
                     )
@@ -135,15 +139,15 @@ class TwitchBotClient(Bot):
 
     async def event_channel_points_custom_reward_redemption_add(self, data: dict, db: AsyncSession):
         twitch_chat_service = TwitchChatService(self)
-        handler = TwitchEventSubService(db, twitch_chat_service)
+        handler = TwitchEventSubService(db, twitch_chat_service, self.app)
         await handler.handle_redemption(data)
 
     async def event_stream_online(self, data: dict):
         twitch_chat_service = TwitchChatService(self)
-        handler = TwitchEventSubService(self.db, twitch_chat_service)
+        handler = TwitchEventSubService(self.db, twitch_chat_service, self.app)
         await handler.handle_stream_online(data)
 
     async def event_stream_offline(self, data: dict):
         twitch_chat_service = TwitchChatService(self)
-        handler = TwitchEventSubService(self.db, twitch_chat_service)
+        handler = TwitchEventSubService(self.db, twitch_chat_service, self.app)
         await handler.handle_stream_offline(data)
